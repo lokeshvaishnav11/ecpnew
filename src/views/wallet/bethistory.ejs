@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html translate="no" data-dpr="1" style="font-size: 40px;">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="robots" content="noindex,nofollow">
+  <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+  <title>Bet History</title>
+  <!-- <link rel="modulepreload" crossorigin="" href="/assets/js/page-home-71e7476c.js"> -->
+
+  <link href="/css/wallet/main.css" rel="stylesheet" />
+  <link href="/css/wallet/chunk_2-1.css" rel="stylesheet" />
+  <link href="/css/wallet/chunk_2-2.css" rel="stylesheet" />
+  <link href="/css/wallet/chunk_2-3.css" rel="stylesheet" />
+  <link rel="shortcut icon" href="/images/bitbug_favicon.ico" type="image/x-icon">
+
+  <style>
+    .history-title {
+      border-bottom: 1px solid #eee;
+      margin-bottom: 0.2rem;
+      padding: .2rem 0;
+      font-size: .4rem;
+      font-weight: 500;
+      color: #f9f3f3;
+      text-align: center;
+      background-color: rgb(141, 9, 9)
+        /* Center title */
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: .3rem;
+      border: 1px solid #eee;
+      border-radius: .1rem;
+    }
+
+    .bet-history-table {
+      width: 100%;
+      min-width: 600px;
+      font-size: 0.32rem;
+      border-collapse: collapse;
+      background-color: #fff;
+    }
+
+    .bet-history-table th,
+    .bet-history-table td {
+      padding: .2rem .15rem;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .bet-history-table th {
+      font-weight: 500;
+      background-color: #f8f9fa;
+      color: #666;
+      border-bottom-width: 2px;
+      border-color: #dee2e6;
+    }
+
+    .bet-history-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .bet-history-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    /* Text color classes */
+    .text-success {
+      color: #198754;
+    }
+
+    .text-danger {
+      color: #dc3545;
+    }
+
+    .text-warning {
+      color: #ffc107;
+    }
+
+    .text-primary {
+      color: #0d6efd;
+    }
+
+    .text-muted {
+      color: #6c757d;
+    }
+
+    .font-weight-bold {
+      font-weight: bold;
+    }
+
+    /* Badge styles */
+    .badge {
+      display: inline-block;
+      padding: .25em .5em;
+      font-size: 85%;
+      font-weight: 500;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: .25rem;
+      color: #fff;
+    }
+
+    .badge-primary {
+      background-color: rgb(141, 9, 9);
+    }
+
+    /* Dragon */
+    .badge-danger {
+      background-color: #000;
+    }
+
+    /* Tiger */
+    .badge-success {
+      background-color: #f4ac11;
+    }
+
+    /* Tie */
+
+    .pagination {
+      display: flex;
+      padding-left: 0;
+      list-style: none;
+      justify-content: center;
+      margin-top: .3rem;
+    }
+
+    .page-item {
+      margin: 0 .1rem;
+    }
+
+    .page-item.disabled .page-link {
+      color: #6c757d;
+      pointer-events: none;
+      background-color: #fff;
+      border-color: #dee2e6;
+    }
+
+    .page-item.active .page-link {
+      z-index: 3;
+      color: #fff;
+      background-color: #861657;
+      border-color: #861657;
+    }
+
+    .page-link {
+      position: relative;
+      display: block;
+      padding: .2rem .4rem;
+      font-size: 0.32rem;
+      color: #861657;
+      text-decoration: none;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: .2rem;
+      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    .page-link:hover {
+      z-index: 2;
+      color: #5a0f3b;
+      background-color: #e9ecef;
+      border-color: #dee2e6;
+    }
+
+    .page-link:focus {
+      z-index: 3;
+      outline: 0;
+      box-shadow: 0 0 0 .2rem rgba(134, 22, 87, 0.25);
+    }
+
+    .van-loading {
+      text-align: center;
+      padding: .5rem 0;
+    }
+
+    .van-loading--sm .van-loading__spinner {
+      width: .5rem;
+      height: .5rem;
+      color: #861657;
+      /* Match theme color */
+    }
+
+    .van-loading__spinner--circular {
+      animation: van-rotate 0.8s linear infinite;
+    }
+
+    @keyframes van-rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .van-loading__circular {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .van-loading__circular circle {
+      stroke: currentColor;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .box {
+      padding: .2rem;
+      background-color: #f4f4f4;
+    }
+
+    .list {
+      background-color: #fff;
+      padding: .3rem;
+      border-radius: .2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
+      margin-bottom: .4rem;
+    }
+  </style>
+</head>
+
+<body style="font-size: 12px;">
+  <div id="app">
+    <div data-v-3966082f="" class="mian">
+      <div data-v-106b99c8="" data-v-3966082f="" class="navbar">
+        <div data-v-106b99c8="" class="navbar-left" onclick="location.href='/home'">
+          <div data-v-106b99c8="" class="bank c-row c-row-middle-center">
+            <img data-v-106b99c8="" src="/images/back.c3244ab0.png" class="navbar-back">
+          </div>
+        </div>
+        <div data-v-106b99c8="" class="navbar-title">Bet History</div>
+        <div data-v-106b99c8="" class="navbar-right"></div>
+      </div>
+
+      <div data-v-3966082f="" class="box" style="height: 100vh;overflow:auto;">
+
+        <div class="list" id="betHistoryContainer" data-v-3966082f="" style="display: none;">
+          <!-- ID remains betHistoryContainer for original JS -->
+          <h4 class="history-title">Dragon Tiger History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Match</th>
+                  <th>Bet On</th>
+                  <th>Bet Amt</th>
+                  <th>Result</th>
+                  <th>Win/Loss</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="dragonTigerHistoryTableBody">
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading User Info...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="dragonTigerHistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Page navigation">
+            <ul class="pagination" id="dragonTigerHistoryPagination">
+            </ul>
+          </nav>
+        </div>
+        <!-- ===== End Dragon Tiger History Section ===== -->
+
+
+        <!-- ===== Aviator History Section (NEW HTML) ===== -->
+        <div class="list" id="aviatorHistoryContainer" style="margin-bottom:40px" data-v-3966082f="">
+          <!-- NEW ID -->
+          <h4 class="history-title">Aviator History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Bet Amt</th>
+                  <th>Cashout At</th>
+                  <th>Status</th>
+                  <th>Win/Loss</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="aviatorHistoryTableBody">
+                <!-- NEW ID -->
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading Aviator History...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="aviatorHistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <!-- NEW ID -->
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Aviator Page navigation">
+            <ul class="pagination" id="aviatorHistoryPagination">
+              <!-- NEW ID -->
+            </ul>
+          </nav>
+        </div>
+        <!-- ===== End Aviator History Section ===== -->
+
+
+
+        <div class="list" id="lotteryHistoryContainer" style="margin-bottom:40px; display:none;">
+          <h4 class="history-title">Lottery History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Round ID</th>
+                  <th>Bet Amt</th>
+                  <th>Number</th>
+                  <th>Type</th>
+                  <th>Result</th>
+                  <th>Phone</th>
+                  <th>Time</th>
+
+                </tr>
+              </thead>
+              <tbody id="lotteryHistoryTableBody">
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading Lottery History...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="lotteryHistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Lottery Page navigation">
+            <ul class="pagination" id="lotteryHistoryPagination"></ul>
+          </nav>
+        </div>
+
+
+
+
+        <div class="list" id="wingoHistoryContainer" style="margin-bottom:40px">
+          <h4 class="history-title">Wingo History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Round ID</th>
+                  <th>Bet Amt</th>
+                  <th>Number</th>
+                  <th>Type</th>
+                  <th>Result</th>
+                  <th>Phone</th>
+                  <th>Time</th>
+
+                </tr>
+              </thead>
+              <tbody id="wingoHistoryTableBody">
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading Wingo History...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="wingoHistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Lottery Page navigation">
+            <ul class="pagination" id="wingoHistoryPagination"></ul>
+          </nav>
+        </div>
+
+
+        <div class="list" id="k3HistoryContainer" style="margin-bottom:40px">
+          <h4 class="history-title">K3  History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Round ID</th>
+                  <th>Bet Amt</th>
+                  <th>Number/Type</th>
+                  <th>Result</th>
+                  <th>Phone</th>
+                  <th>Time</th>
+
+                </tr>
+              </thead>
+              <tbody id="k3HistoryTableBody">
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading K3 History...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="k3HistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Lottery Page navigation">
+            <ul class="pagination" id="k3HistoryPagination"></ul>
+          </nav>
+        </div>
+
+
+        <div class="list" id="5dHistoryContainer" style="margin-bottom:40px">
+          <h4 class="history-title">5D History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Round ID</th>
+                  <th>Bet Amt</th>
+                  <th>Number/Type</th>
+                  <th>Result</th>
+                  <th>Phone</th>
+                  <th>Time</th>
+
+                </tr>
+              </thead>
+              <tbody id="5dHistoryTableBody">
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading 5D History...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="5dHistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Lottery Page navigation">
+            <ul class="pagination" id="5dHistoryPagination"></ul>
+          </nav>
+        </div>
+
+
+        <div class="list" id="chickenHistoryContainer" style="margin-bottom:40px; display:none;">
+          <h4 class="history-title">Chicken History</h4>
+          <div class="table-responsive">
+            <table class="bet-history-table">
+              <thead>
+                <tr>
+                  <th>Round ID</th>
+                  <th>Bet Amt</th>
+                  <th>CrashAt</th>
+                  <th>Win</th>
+                  <th>Phone</th>
+                  <th>Time</th>
+
+                </tr>
+              </thead>
+              <tbody id="chickenHistoryTableBody">
+                <tr>
+                  <td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">Loading chicken History...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="chickenHistoryLoading" style="display: none;" class="van-loading van-loading--sm">
+            <span class="van-loading__spinner van-loading__spinner--circular">
+              <svg viewBox="25 25 50 50" class="van-loading__circular">
+                <circle cx="50" cy="50" r="20" fill="none"></circle>
+              </svg>
+            </span>
+          </div>
+          <nav aria-label="Lottery Page navigation">
+            <ul class="pagination" id="chickenHistoryPagination"></ul>
+          </nav>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- <script src="/js/client.js"></script> -->
+  <!-- <script src="/DragonTiger/assets/js/script.js"></script> -->
+
+
+  <script>
+    $(document).ready(function() {
+      // --- Dragon Tiger Variables (Keep existing names) ---
+      const itemsPerPage = 10;
+      let historyCurrentPage = 1;
+      let historyIsLoading = false;
+      let historyTotalPages = 1;
+      let historyUserPhone = null;
+
+      const historyTableBody = $('#dragonTigerHistoryTableBody');
+      const loadingIndicator = $('#dragonTigerHistoryLoading');
+      const paginationContainer = $('#dragonTigerHistoryPagination');
+
+      function formatDateDT(timestamp) {
+        if (!timestamp) return 'N/A';
+        try {
+          const d = new Date(timestamp.replace(' ', 'T') + 'Z');
+          if (isNaN(d.getTime())) return timestamp;
+          const h = ('0' + d.getHours()).slice(-2);
+          const m = ('0' + d.getMinutes()).slice(-2);
+          const s = ('0' + d.getSeconds()).slice(-2);
+          return `${h}:${m}:${s}`;
+        } catch (e) {
+          console.error("DT Date Err:", e);
+          return 'Date Err';
+        }
+      }
+
+      // function formatDateDT2(dateStr) {
+      //   const date = new Date(dateStr);
+      //   const day = String(date.getDate()).padStart(2, '0');
+      //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      //   const year = date.getFullYear();
+      //   const hours = String(date.getHours()).padStart(2, '0');
+      //   const minutes = String(date.getMinutes()).padStart(2, '0');
+
+      //   return `${day}-${month}-${year} ${hours}:${minutes}`;
+      // }
+
+
+      function formatDate(dateString) {
+  const date = new Date(dateString);
+
+  const options = {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  };
+
+  const formattedDate = date.toLocaleString('en-GB', options);
+  return formattedDate.replace(',', '');
+}
+
+
+      function formatBetCard(card) {
+        if (!card) return 'N/A';
+        card = card.toLowerCase();
+        if (card === 'dragon') return '<span class="badge badge-primary">Dragon</span>';
+        if (card === 'tiger') return '<span class="badge badge-danger">Tiger</span>';
+        if (card === 'tie') return '<span class="badge badge-success">Tie</span>';
+        return card;
+      }
+
+      function formatResult(result) {
+        if (!result || result === 'pending') return '<span class="text-warning">-</span>';
+        result = result.toLowerCase();
+        if (result === 'dragon') return '<span class="text-primary font-weight-bold">Dragon</span>';
+        if (result === 'tiger') return '<span class="text-danger font-weight-bold">Tiger</span>';
+        if (result === 'tie') return '<span class="text-success font-weight-bold">Tie</span>';
+        return result;
+      }
+
+      function formatWinLossAmountDT(item) {
+        if (!item || item.result === 'pending' || typeof item.win_amount === 'undefined' || item.win_amount === '-') {
+          return '<span class="text-muted">-</span>';
+        }
+        const wa = Number(item.win_amount);
+        const ba = Number(item.amount);
+        const profit = wa - ba;
+        if (profit > 0) return `<span class="text-success font-weight-bold">+${profit.toFixed(2)}</span>`;
+        if (profit < 0 || (wa === 0 && ba > 0)) return `<span class="text-danger font-weight-bold">-${ba.toFixed(2)}</span>`;
+        return `<span class="text-muted">0.00</span>`;
+      }
+
+      function renderBetHistoryTable(list) {
+        historyTableBody.empty();
+        if (!list || list.length === 0) {
+          historyTableBody.html('<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799; font-size: 0.37rem;">No Dragon Tiger History Found</td></tr>');
+          return;
+        }
+        $.each(list, function(index, item) {
+          const winLossHtml = formatWinLossAmountDT(item);
+          const resultHtml = formatResult(item.result);
+          const betCardHtml = formatBetCard(item.card);
+          const betAmount = Number(item.amount || 0).toFixed(2);
+          const timeFormatted = formatDate(item.created_at);
+
+
+
+          var rowHtml = `<tr><td>${item.matchId || 'N/A'}</td><td>${betCardHtml}</td><td>${betAmount}</td><td>${resultHtml}</td><td>${winLossHtml}</td><td>${timeFormatted}</td></tr>`;
+          historyTableBody.append(rowHtml);
+        });
+      }
+
+      function renderPagination(paginationData) {
+        paginationContainer.empty();
+        if (!paginationData || !paginationData.totalPages || paginationData.totalPages <= 1) return; // Check totalPages exists
+        const currentPage = paginationData.currentPage;
+        historyTotalPages = paginationData.totalPages;
+
+        let prevDisabled = currentPage === 1 ? 'disabled' : '';
+        paginationContainer.append(`<li class="page-item ${prevDisabled}"><a class="page-link dt-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">«</a></li>`);
+
+        paginationContainer.append(`<li class="page-item disabled"><span class="page-link" style="color: #333; background: #f0f0f0; border-color: #ddd;">${currentPage} / ${historyTotalPages}</span></li>`); // Use historyTotalPages
+
+        let nextDisabled = currentPage === historyTotalPages ? 'disabled' : '';
+        paginationContainer.append(`<li class="page-item ${nextDisabled}"><a class="page-link dt-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">»</a></li>`);
+      }
+
+      function fetchBetHistory(page = 1) {
+        if (!historyUserPhone) {
+          console.error("DT Fetch Error: User phone missing.");
+          historyTableBody.html('<tr><td colspan="6" class="text-center text-danger" style="padding: 1rem 0;">Error: User phone missing.</td></tr>');
+          loadingIndicator.hide();
+          paginationContainer.empty();
+          return;
+        }
+        if (historyIsLoading) return;
+        historyIsLoading = true;
+        historyCurrentPage = page;
+
+        loadingIndicator.show();
+        if (page === 1 || historyTableBody.children().length <= 1) {
+          historyTableBody.html('<tr><td colspan="6" class="text-center text-muted" style="padding: 1rem 0;">Loading Dragon Tiger History...</td></tr>');
+        }
+
+        const apiUrl = `/api/betting-history/${historyUserPhone}?page=${page}&limit=${itemsPerPage}`;
+
+        $.ajax({
+          url: apiUrl,
+          type: 'GET',
+          dataType: 'json',
+          success: function(response) {
+            console.log(response, "dragonnn historyy")
+            let historyData = null;
+            let paginationData = null;
+            if (response && response.data) {
+              historyData = response.data;
+              paginationData = response.pagination;
+            } else if (response && Array.isArray(response)) {
+              console.warn("DT Response format warning: Received flat array.");
+              historyData = response;
+              paginationData = null;
+            } else {
+              console.error("DT History API Error (Original Script Check): Unexpected response format or error flag.", response);
+              historyTableBody.html('<tr><td colspan="6" class="text-center text-warning" style="padding: 1rem 0;">Could not load history or no records found.</td></tr>');
+              renderPagination(null);
+              return;
+            }
+
+            renderBetHistoryTable(historyData);
+            renderPagination(paginationData);
+
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX Error fetching DT history:", textStatus, errorThrown, jqXHR.status, jqXHR.responseText);
+            let errorMsg = 'Failed to load Dragon Tiger history.';
+            if (jqXHR.status === 404) {
+              errorMsg = 'Error: DT API endpoint not found.';
+            } else if (jqXHR.status === 500) {
+              errorMsg = 'Server error loading DT history.';
+            }
+            historyTableBody.html(`<tr><td colspan="6" class="text-center text-danger" style="padding: 1rem 0;">${errorMsg} (Status: ${jqXHR.status})</td></tr>`);
+            renderPagination(null);
+          },
+          complete: function() {
+            historyIsLoading = false;
+            loadingIndicator.hide();
+          }
+        });
+      }
+
+      async function fetchInitialUserInfoAndHistory() {
+        const userInfoApiUrl = '/api/webapi/GetUserInfo';
+
+        loadingIndicator.show();
+        historyTableBody.html('<tr><td colspan="6" class="text-center text-muted" style="padding: 1rem 0;">Loading User Info...</td></tr>');
+        paginationContainer.empty();
+
+        try {
+          const response = await fetch(userInfoApiUrl);
+          if (!response.ok) throw new Error(`User Info API failed: ${response.status}`);
+          const result = await response.json();
+
+          if (result && result.status === true && result.data && result.data.phone_user) {
+            historyUserPhone = result.data.phone_user; // Set the shared variable
+            fetchBetHistory(1); // Fetch ONLY DT history using original function
+          } else {
+            throw new Error(result.message || "Phone number not found in user info.");
+          }
+        } catch (error) {
+          console.error('Fetch User Info Error (DT Script):', error);
+          historyTableBody.html(`<tr><td colspan="6" class="text-center text-danger" style="padding: 1rem 0;">Error fetching user info: ${error.message}</td></tr>`);
+          loadingIndicator.hide();
+        }
+      }
+
+      paginationContainer.on('click', '.dt-page-link', function(e) {
+        e.preventDefault();
+        if ($(this).parent().hasClass('disabled') || historyIsLoading) {
+          return;
+        }
+        const page = $(this).data('page');
+        fetchBetHistory(page); // Call original fetch func
+      });
+
+      fetchInitialUserInfoAndHistory(); // Starts the DT loading process
+
+    });
+  </script>
+
+
+  <!-- Aviator History Script (NEW JS BLOCK)              -->
+  <script>
+    $(document).ready(function() {
+      const avItemsPerPage = 10;
+      let avCurrentPage = 1;
+      let avIsLoading = false;
+      let avTotalPages = 1;
+      let avUserPhone = null;
+
+      const avTableBody = $('#aviatorHistoryTableBody');
+      const avLoadingIndicator = $('#aviatorHistoryLoading');
+      const avPaginationContainer = $('#aviatorHistoryPagination');
+
+      function formatDateAV(timestamp) {
+        if (!timestamp) return 'N/A';
+        try {
+          const d = new Date(timestamp.replace(' ', 'T') + 'Z'); // Treat as UTC
+          if (isNaN(d.getTime())) return timestamp;
+          const year = d.getFullYear();
+          const month = ('0' + (d.getMonth() + 1)).slice(-2);
+          const day = ('0' + d.getDate()).slice(-2);
+          const h = ('0' + d.getHours()).slice(-2);
+          const m = ('0' + d.getMinutes()).slice(-2);
+          const s = ('0' + d.getSeconds()).slice(-2);
+          return `${year}-${month}-${day} ${h}:${m}:${s}`; // Full DateTime
+        } catch (e) {
+          console.error("AV Date Err:", e);
+          return 'Date Err';
+        }
+      }
+
+
+      // function formatDateDT3(dateStr) {
+      //   const date = new Date(dateStr);
+      //   const day = String(date.getDate()).padStart(2, '0');
+      //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      //   const year = date.getFullYear();
+      //   const hours = String(date.getHours()).padStart(2, '0');
+      //   const minutes = String(date.getMinutes()).padStart(2, '0');
+
+      //   return `${day}-${month}-${year} ${hours}:${minutes}`;
+      // }
+
+
+      function formatDateDT3(dateStr) {
+        const date = new Date(dateStr);
+        const options = {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        };
+
+        const formatted = new Intl.DateTimeFormat('en-GB', options).format(date);
+        const [datePart, timePart] = formatted.split(', ');
+        return datePart.replace(/\//g, '-') + ' ' + timePart;
+      }
+
+
+
+      function formatAviatorStatus(item) {
+        if (typeof item.status === 'undefined' || item.status === null) return '<span class="text-warning">N/A</span>';
+        if (item.status == 1) return '<span class="text-success">Won</span>';
+        return '<span class="text-danger">Lost</span>'; // status == 0 or other
+      }
+
+      function formatAviatorWinLossAmount(item) {
+        if (typeof item.status === 'undefined' || typeof item.amount === 'undefined') return '<span class="text-muted">-</span>';
+        const betAmount = Number(item.amount);
+        if (isNaN(betAmount)) return '<span class="text-warning">Bet?</span>';
+
+        if (item.status == 1) { // Won
+          const cashoutMultiplier = Number(item.crash); // **ASSUMPTION**: 'crash' field holds cashout multiplier if status=1
+          if (isNaN(cashoutMultiplier) || cashoutMultiplier <= 1) {
+            console.warn("Won Aviator bet, but invalid cashout multiplier in 'crash' field:", item.crash);
+            return '<span class="text-warning">Profit?</span>'; // Indicate uncertainty
+          }
+          const profit = (betAmount * cashoutMultiplier) - betAmount;
+          return `<span class="text-success font-weight-bold">+${profit.toFixed(2)}</span>`;
+        } else { // Lost
+          return `<span class="text-danger font-weight-bold">-${betAmount.toFixed(2)}</span>`;
+        }
+      }
+
+      function formatCashoutMultiplier(item) {
+        if (typeof item.status === 'undefined') return '-';
+        const multiplier = Number(item.crash); // **ASSUMPTION**: 'crash' holds the relevant multiplier
+        if (isNaN(multiplier)) return '<span class="text-warning">?x</span>';
+
+        if (item.status == 1) { // Won
+          return `<span class="text-success">${multiplier.toFixed(2)}x</span>`;
+        } else { // Lost
+          return `<span class="text-danger">Crashed @ ${multiplier.toFixed(2)}x</span>`;
+        }
+      }
+
+      function renderAviatorTable(list) {
+        avTableBody.empty();
+        if (!list || list.length === 0) {
+          avTableBody.html('<tr><td colspan="6" class="text-center text-muted" style="padding: 1rem 0;">No Aviator History Found</td></tr>');
+          return;
+        }
+        $.each(list, function(index, item) {
+          const periodId = item.period || 'N/A';
+          const betAmount = Number(item.amount || 0).toFixed(2);
+          const cashoutMultiHtml = formatCashoutMultiplier(item);
+          const statusHtml = formatAviatorStatus(item);
+          const winLossHtml = formatAviatorWinLossAmount(item);
+          // Use timeFormatted from API if available, else format time
+          const timeFormatted = formatDateDT3(item.timeFormatted || item.time);
+
+          var rowHtml = `<tr>
+                        <td>${periodId}</td>
+                        <td>${betAmount}</td>
+                        <td>${cashoutMultiHtml}</td>
+                        <td>${statusHtml}</td>
+                        <td>${winLossHtml}</td>
+                        <td>${timeFormatted}</td>
+                    </tr>`;
+          avTableBody.append(rowHtml);
+        });
+      }
+
+      function renderAviatorPagination(paginationData) {
+        avPaginationContainer.empty();
+        if (!paginationData || !paginationData.totalPages || paginationData.totalPages <= 1) return;
+        const currentPage = paginationData.currentPage;
+        avTotalPages = paginationData.totalPages; // AV specific total pages
+
+        let prevDisabled = currentPage === 1 ? 'disabled' : '';
+        avPaginationContainer.append(`<li class="page-item ${prevDisabled}"><a class="page-link av-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">«</a></li>`); // Use av-page-link class
+
+        avPaginationContainer.append(`<li class="page-item disabled"><span class="page-link" style="color: #333; background: #f0f0f0; border-color: #ddd;">${currentPage} / ${avTotalPages}</span></li>`); // Use avTotalPages
+
+        let nextDisabled = currentPage === avTotalPages ? 'disabled' : ''; // Use avTotalPages
+        avPaginationContainer.append(`<li class="page-item ${nextDisabled}"><a class="page-link av-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">»</a></li>`); // Use av-page-link class
+      }
+
+      // --- Function to Fetch Aviator History ---
+      function fetchAviatorHistory(page = 1) {
+        if (!avUserPhone) {
+          console.error("AV Fetch Error: User phone missing.");
+          return;
+        }
+        if (avIsLoading) return;
+        avIsLoading = true;
+        avCurrentPage = page;
+
+        avLoadingIndicator.show();
+        if (page === 1 || avTableBody.children().length <= 1) {
+          avTableBody.html('<tr><td colspan="6" class="text-center text-muted" style="padding: 1rem 0;">Loading Aviator History...</td></tr>');
+        }
+        // avPaginationContainer.empty(); // Let render handle clearing
+
+        const apiUrl = `/api/aviator-history/${avUserPhone}?page=${page}&limit=${avItemsPerPage}`;
+        // console.log("Fetching AV history from:", apiUrl);
+
+        $.ajax({
+          url: apiUrl,
+          type: 'GET',
+          dataType: 'json',
+          success: function(response) {
+            // console.log("AV Raw Response:", response);
+            // Check structure { status: true, data: [...], pagination: {...} }
+            if (response && response.status === true && response.data) {
+              renderAviatorTable(response.data);
+              renderAviatorPagination(response.pagination); // Call AV pagination func
+            } else {
+              console.error("AV History API Error: Unexpected format or error flag.", response);
+              avTableBody.html(`<tr><td colspan="6" class="text-center text-warning" style="padding: 1rem 0;">${(response && response.message) || 'Could not load Aviator history or no records found.'}</td></tr>`);
+              renderAviatorPagination(null); // Clear pagination
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX Error fetching AV history:", textStatus, errorThrown, jqXHR.status);
+            let errorMsg = 'Failed to load Aviator history.';
+            if (jqXHR.status === 404) {
+              errorMsg = 'Error: AV API endpoint not found.';
+            } else if (jqXHR.status === 500) {
+              errorMsg = 'Server error loading AV history.';
+            }
+            avTableBody.html(`<tr><td colspan="6" class="text-center text-danger" style="padding: 1rem 0;">${errorMsg} (Status: ${jqXHR.status})</td></tr>`);
+            renderAviatorPagination(null); // Clear pagination
+          },
+          complete: function() {
+            avIsLoading = false;
+            avLoadingIndicator.hide();
+          }
+        });
+      }
+
+      async function fetchUserInfoForAviator() {
+        const userInfoApiUrl = '/api/webapi/GetUserInfo';
+        avTableBody.html('<tr><td colspan="6" class="text-center text-muted" style="padding: 1rem 0;">Verifying user for Aviator...</td></tr>');
+        avLoadingIndicator.show();
+
+        try {
+          const response = await fetch(userInfoApiUrl);
+          if (!response.ok) throw new Error(`User Info API failed: ${response.status}`);
+          const result = await response.json();
+
+          if (result && result.status === true && result.data && result.data.phone_user) {
+            avUserPhone = result.data.phone_user;
+            fetchAviatorHistory(1);
+          } else {
+            throw new Error(result.message || "Phone number not found for Aviator.");
+          }
+        } catch (error) {
+          console.error('Fetch User Info Error (AV Script):', error);
+          avTableBody.html(`<tr><td colspan="6" class="text-center text-danger" style="padding: 1rem 0;">Error verifying user: ${error.message}</td></tr>`);
+          avLoadingIndicator.hide();
+        }
+      }
+
+      avPaginationContainer.on('click', '.av-page-link', function(e) {
+        e.preventDefault();
+        if ($(this).parent().hasClass('disabled') || avIsLoading) {
+          return;
+        }
+        const page = $(this).data('page');
+        fetchAviatorHistory(page);
+      });
+
+
+      fetchUserInfoForAviator();
+
+
+    });
+  </script>
+
+  <script>
+    async function fetchLotteryHistory() {
+      const loading = document.getElementById('lotteryHistoryLoading');
+      const tableBody = document.getElementById('lotteryHistoryTableBody');
+      const pagination = document.getElementById('lotteryHistoryPagination');
+
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">Loading Lottery History...</td></tr>`;
+      loading.style.display = 'block';
+      pagination.innerHTML = ''; // Clear pagination, but it's no longer used
+
+      try {
+        // Step 1: Get user phone
+        const userInfoRes = await fetch('/api/webapi/GetUserInfo');
+        const userInfo = await userInfoRes.json();
+
+        if (!userInfo.status || !userInfo.data || !userInfo.data.phone_user) {
+          throw new Error("Phone number not found in user info.");
+        }
+
+        const phone = userInfo.data.phone_user;
+
+        // Step 2: Get full lottery history (no pagination)
+        const historyRes = await fetch(`/api/lottery-history/${phone}`);
+        const historyData = await historyRes.json();
+
+        if (!historyData.status) {
+          throw new Error("Failed to load lottery history.");
+        }
+
+        function formatDateTimeWithAMPM(datetimeString) {
+    const date = new Date(datetimeString);
+
+    const options = {
+        year: 'numeric',
+        month: 'short',     // Or 'long' for full month name
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true        // This enables AM/PM format
+    };
+
+    return date.toLocaleString('en-US', options);
+}
+
+
+        const bets = historyData.data;
+        console.log(bets,"bhjbhjbhj")
+
+        if (bets.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">No data found.</td></tr>`;
+        } else {
+          tableBody.innerHTML = bets.map(bet => `
+                    <tr>
+                        <td>${bet.roundId}</td>
+                        <td>${bet.price}</td>
+                        <td>${bet.number}</td>
+                        <td>${bet.type === "small" ? "Lottery" : "Lucky Draw"}</td>
+                        <td>${bet.result}</td>
+                        <td>${phone}</td>
+                        <td>${formatDateTimeWithAMPM(bet.created_at)}</td>
+                         
+
+                       
+                        
+
+
+
+                    </tr>
+                `).join('');
+        }
+
+      } catch (error) {
+        console.error('Lottery history error:', error);
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchLotteryHistory();
+    });
+  </script>
+
+
+
+<script>
+  async function fetchWingoHistory() {
+    const loading = document.getElementById('wingoHistoryLoading');
+    const tableBody = document.getElementById('wingoHistoryTableBody');
+    const pagination = document.getElementById('wingoHistoryPagination');
+
+    tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">Loading Wingo History...</td></tr>`;
+    loading.style.display = 'block';
+    pagination.innerHTML = ''; // Clear pagination, but it's no longer used
+
+    try {
+      // Step 1: Get user phone
+      const userInfoRes = await fetch('/api/webapi/GetUserInfo');
+      const userInfo = await userInfoRes.json();
+
+      if (!userInfo.status || !userInfo.data || !userInfo.data.phone_user) {
+        throw new Error("Phone number not found in user info.");
+      }
+
+      const phone = userInfo.data.phone_user;
+
+      // Step 2: Get full lottery history (no pagination)
+      const historyRes = await fetch(`/api/wingo-history/${phone}`);
+      const historyData = await historyRes.json();
+
+      if (!historyData.status) {
+        throw new Error("Failed to load lottery history.");
+      }
+
+      const formatIST = (timestamp) => {
+  const date = new Date(Number(timestamp));
+  return date.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+};
+
+
+
+      const bets = historyData.data;
+      console.log(bets,"wingooo bets")
+
+      if (bets.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">No data found.</td></tr>`;
+      } else {
+        tableBody.innerHTML = bets.map(bet => `
+                  <tr>
+                      <td>${bet.stage}</td>
+                      <td>${bet.amount}</td>
+                      <td>${bet.bet}</td>
+                      <td>${bet.bet}</td>
+                      <td>${bet.result}</td>
+                      <td>${phone}</td>
+                      <td>${formatIST(bet.time)}</td>
+                       
+
+                     
+                      
+
+
+
+                  </tr>
+              `).join('');
+      }
+
+    } catch (error) {
+      console.error('Lottery history error:', error);
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    } finally {
+      loading.style.display = 'none';
+    }
+  }
+
+  // Load on page ready
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchWingoHistory();
+  });
+</script>
+
+
+<script>
+  async function fetchK3History() {
+    const loading = document.getElementById('k3HistoryLoading');
+    const tableBody = document.getElementById('k3HistoryTableBody');
+    const pagination = document.getElementById('k3HistoryPagination');
+
+    tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">Loading K3 History...</td></tr>`;
+    loading.style.display = 'block';
+    pagination.innerHTML = ''; // Clear pagination, but it's no longer used
+
+    try {
+      // Step 1: Get user phone
+      const userInfoRes = await fetch('/api/webapi/GetUserInfo');
+      const userInfo = await userInfoRes.json();
+
+      if (!userInfo.status || !userInfo.data || !userInfo.data.phone_user) {
+        throw new Error("Phone number not found in user info.");
+      }
+
+      const phone = userInfo.data.phone_user;
+
+      // Step 2: Get full lottery history (no pagination)
+      const historyRes = await fetch(`/api/k3history/${phone}`);
+      const historyData = await historyRes.json();
+
+      if (!historyData.status) {
+        throw new Error("Failed to load lottery history.");
+      }
+
+      const formatIST2 = (timestamp) => {
+  const date = new Date(Number(timestamp));
+  return date.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+};
+
+
+
+      const bets = historyData.data;
+      console.log(bets,"k33333 bets")
+
+      if (bets.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">No data found.</td></tr>`;
+      } else {
+        tableBody.innerHTML = bets.map(bet => `
+                  <tr>
+                      <td>${bet.stage}</td>
+                      <td>${bet.money}</td>
+                      <td>${bet.bet}</td>
+                      <td>${bet.result}</td>
+                      <td>${phone}</td>
+                      <td>${formatIST2(bet.time)}</td>
+                       
+
+                     
+                      
+
+
+
+                  </tr>
+              `).join('');
+      }
+
+    } catch (error) {
+      console.error('K3 history error:', error);
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    } finally {
+      loading.style.display = 'none';
+    }
+  }
+
+  // Load on page ready
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchK3History();
+  });
+</script>
+
+
+
+<script>
+  async function fetch5DHistory() {
+    const loading = document.getElementById('5dHistoryLoading');
+    const tableBody = document.getElementById('5dHistoryTableBody');
+    const pagination = document.getElementById('5dHistoryPagination');
+
+    tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">Loading 5d History...</td></tr>`;
+    loading.style.display = 'block';
+    pagination.innerHTML = ''; // Clear pagination, but it's no longer used
+
+    try {
+      // Step 1: Get user phone
+      const userInfoRes = await fetch('/api/webapi/GetUserInfo');
+      const userInfo = await userInfoRes.json();
+
+      if (!userInfo.status || !userInfo.data || !userInfo.data.phone_user) {
+        throw new Error("Phone number not found in user info.");
+      }
+
+      const phone = userInfo.data.phone_user;
+
+      // Step 2: Get full lottery history (no pagination)
+      const historyRes = await fetch(`/api/5dhistory/${phone}`);
+      const historyData = await historyRes.json();
+
+      if (!historyData.status) {
+        throw new Error("Failed to load 5d history.");
+      }
+
+      const formatIST2 = (timestamp) => {
+  const date = new Date(Number(timestamp));
+  return date.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+};
+
+
+
+      const bets = historyData.data;
+      console.log(bets,"5dddd3333 bets")
+
+      if (bets.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">No data found.</td></tr>`;
+      } else {
+        tableBody.innerHTML = bets.map(bet => `
+                  <tr>
+                      <td>${bet.stage}</td>
+                      <td>${bet.money}</td>
+                      <td>${bet.bet}</td>
+                      <td>${bet.result}</td>
+                      <td>${phone}</td>
+                      <td>${formatIST2(bet.time)}</td>
+                       
+
+                     
+                      
+
+
+
+                  </tr>
+              `).join('');
+      }
+
+    } catch (error) {
+      console.error('5d history error:', error);
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    } finally {
+      loading.style.display = 'none';
+    }
+  }
+
+  // Load on page ready
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch5DHistory();
+  });
+</script>
+
+
+
+
+<script>
+  async function fetchchickenHistory() {
+    const loading = document.getElementById('chickenHistoryLoading');
+    const tableBody = document.getElementById('chickenHistoryTableBody');
+    const pagination = document.getElementById('chickenHistoryPagination');
+
+    tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">Loading chicken History...</td></tr>`;
+    loading.style.display = 'block';
+    pagination.innerHTML = ''; // Clear pagination, but it's no longer used
+
+    try {
+      // Step 1: Get user phone
+      const userInfoRes = await fetch('/api/webapi/GetUserInfo');
+      const userInfo = await userInfoRes.json();
+
+      if (!userInfo.status || !userInfo.data || !userInfo.data.phone_user) {
+        throw new Error("Phone number not found in user info.");
+      }
+
+      const phone = userInfo.data.phone_user;
+
+      // Step 2: Get full lottery history (no pagination)
+      const historyRes = await fetch(`/api/chickenhistory/${phone}`);
+      const historyData = await historyRes.json();
+
+      if (!historyData.status) {
+        throw new Error("Failed to load chicken history.");
+      }
+
+      const formatIST2 = (timestamp) => {
+  const date = new Date(Number(timestamp));
+  return date.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+};
+
+
+
+      const bets = historyData.data;
+      console.log(bets,"cheickkens bets")
+
+      if (bets.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 1rem 0; color: #969799;">No data found.</td></tr>`;
+      } else {
+        tableBody.innerHTML = bets.map(bet => `
+                  <tr>
+                      <td>${bet.roundId}</td>
+                      <td>${bet.amount}</td>
+                      <td>${bet.crash}</td>
+                     <td style="color: 
+  ${bet.win > 0 ? 'green' : (bet.win == 0 ? 'red' : 'red')}">
+  ${bet.win > 0 ? '+' + bet.win : (bet.win === 0 ? '-' + bet.amount : '-' + bet.amount)}
+</td>
+                      <td>${phone}</td>
+                      <td>${new Date(bet.created_at).toLocaleString("en-IN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true,
+                      })}</td>
+
+                       
+
+                     
+                      
+
+
+
+                  </tr>
+              `).join('');
+      }
+
+    } catch (error) {
+      console.error('chicken history error:', error);
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    } finally {
+      loading.style.display = 'none';
+    }
+  }
+
+  // Load on page ready
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchchickenHistory();
+  });
+</script>
+
+</body>
+
+</html>

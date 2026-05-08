@@ -1,0 +1,60 @@
+const path = require("path");
+require('dotenv').config({
+  path: path.resolve(__dirname, '../.env'), // ✅ Load .env from root
+  override: true                             // ✅ Ensures it overrides any shell env vars
+});
+
+const express = require('express');
+const configViewEngine = require('./config/configEngine');
+const routes  = require('./routes/web');
+const cronJobContronler = require('./controllers/cronJobContronler');
+const socketIoController = require('./controllers/socketIoController');
+const aviatorController = require('./controllers/aviatorController');
+const historyApiRoutes = require('../src/public/DragonTiger/assets/routes/historyApi');
+
+
+
+let cookieParser = require('cookie-parser');
+// require('dotenv').config({path:'../.env'});
+
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+const port = process.env.PORT || 7777;
+
+
+app.use(cookieParser());
+// app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use('/api', historyApiRoutes); 
+
+// setup viewEngine
+configViewEngine(app);
+// init Web Routes
+routes.initWebRouter(app);
+
+// Cron game 1 Phut 
+cronJobContronler.cronJobGame1p(io);
+
+// Check xem ai connect vào sever 
+socketIoController.sendMessageAdmin(io);
+
+aviatorController.Aviator(io);
+
+
+
+// app.all('*', (req, res) => {
+//     return res.render("404.ejs"); 
+// });
+
+
+
+
+
+server.listen(port, () => {
+    console.log("Connected success port: " + port);
+});
+
