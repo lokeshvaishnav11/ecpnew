@@ -466,46 +466,116 @@ const partnerRecord = async (req,res)=>{
  }
 
 
- const gamePage = async (req,res) =>{
-    const auth = req.cookies.auth;
-    const [user] = await connection.execute('SELECT phone,money,win_wallet FROM users WHERE token = ?',[auth]);
-    const query = `
-  SELECT * 
-  FROM aviator WHERE status != 0
-  ORDER BY id DESC 
-  LIMIT 30;
-`;
+//  const gamePage = async (req,res) =>{
+//     const auth = req.cookies.auth;
+//     const [user] = await connection.execute('SELECT phone,money,win_wallet FROM users WHERE token = ?',[auth]);
+//     const query = `
+//   SELECT * 
+//   FROM aviator WHERE status != 0
+//   ORDER BY id DESC 
+//   LIMIT 30;
+// `;
 
-const [result] = await connection.execute(query);
-const [betHistory] = await connection.execute(
-    `SELECT ar.*, a.*, 
-            DATE_FORMAT(ar.time, '%Y-%m-%d %H:%i:%s') AS formatted_time
-     FROM aviator_result ar
-     JOIN aviator a ON ar.period = a.id
-     WHERE ar.phone = ?
-     ORDER BY ar.period DESC`,  // Reverse order by period
-    [user[0].phone]
-  );
+// const [result] = await connection.execute(query);
+// const [betHistory] = await connection.execute(
+//     `SELECT ar.*, a.*, 
+//             DATE_FORMAT(ar.time, '%Y-%m-%d %H:%i:%s') AS formatted_time
+//      FROM aviator_result ar
+//      JOIN aviator a ON ar.period = a.id
+//      WHERE ar.phone = ?
+//      ORDER BY ar.period DESC`,  // Reverse order by period
+//     [user[0].phone]
+//   );
   
   
   
-    res.render('aviator.ejs', {
-        csrfToken: 'your_csrf_token',
-        user: {
-            currency: '₹',
-            id: 12345,
-        },
-        wallet: user[0].money+user[0].win_wallet,
-        settings: {
-            minBetAmount: 10,
-            maxBetAmount: 10000,
-        },
-        phone:user[0].phone,
-        currentGameData: JSON.stringify({ id: 1, name: 'Game Name' }),
-        result:result,
-        betHistory:betHistory
-    });
-}
+//     res.render('aviator.ejs', {
+//         csrfToken: 'your_csrf_token',
+//         user: {
+//             currency: '₹',
+//             id: 12345,
+//         },
+//         wallet: user[0].money+user[0].win_wallet,
+//         settings: {
+//             minBetAmount: 10,
+//             maxBetAmount: 10000,
+//         },
+//         phone:user[0].phone,
+//         currentGameData: JSON.stringify({ id: 1, name: 'Game Name' }),
+//         result:result,
+//         betHistory:betHistory
+//     });
+// }
+
+const gamePage = async (req, res) => {
+    try {
+        const auth = req.cookies.auth;
+
+        let userData = {
+            phone: null,
+            money: 0,
+            win_wallet: 0
+        };
+
+        let betHistory = [];
+
+        // Agar user login hai
+        if (auth) {
+            const [user] = await connection.execute(
+                'SELECT phone, money, win_wallet FROM users WHERE token = ?',
+                [auth]
+            );
+
+            if (user.length > 0) {
+                userData = user[0];
+
+                const [history] = await connection.execute(
+                    `SELECT ar.*, a.*, 
+                            DATE_FORMAT(ar.time, '%Y-%m-%d %H:%i:%s') AS formatted_time
+                     FROM aviator_result ar
+                     JOIN aviator a ON ar.period = a.id
+                     WHERE ar.phone = ?
+                     ORDER BY ar.period DESC`,
+                    [userData.phone]
+                );
+
+                betHistory = history;
+            }
+        }
+
+        // Game result sabko dikhega
+        const query = `
+            SELECT * 
+            FROM aviator 
+            WHERE status != 0
+            ORDER BY id DESC 
+            LIMIT 30;
+        `;
+
+        const [result] = await connection.execute(query);
+
+        res.render('aviator.ejs', {
+            csrfToken: 'your_csrf_token',
+            user: {
+                currency: '₹',
+                id: 12345,
+            },
+            wallet: userData.money + userData.win_wallet,
+            settings: {
+                minBetAmount: 10,
+                maxBetAmount: 10000,
+            },
+            phone: userData.phone,
+            currentGameData: JSON.stringify({ id: 1, name: 'Game Name' }),
+            result: result,
+            betHistory: betHistory
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
+    }
+};
 
 
 module.exports = {

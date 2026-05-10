@@ -743,6 +743,11 @@ $(".foot .right").click(function (e) {
     },
     dataType: "json",
     success: function (response) {
+      // Check if login is required
+      if (response.needLogin === true) {
+        window.location.href = "/login";
+        return;
+      }
       alertMessJoin(response.message);
       if (response.status === false) return;
       $("#history-order").prepend(response.data);

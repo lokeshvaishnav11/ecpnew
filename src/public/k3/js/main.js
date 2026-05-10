@@ -952,6 +952,11 @@ function sendGame1() {
         },
         dataType: "json",
         success: function (response) {
+            // Check if login is required
+            if (response.needLogin === true) {
+                window.location.href = "/login";
+                return;
+            }
             alertMess(response.message);
             let change = String(response.change);
             if (response.status) {
@@ -959,6 +964,9 @@ function sendGame1() {
                 $('.moneyU').text(amt + '.00');
                 socket.emit('data-server-3', { change, gameJoin: 1, listJoin, money, xvalue, game: $('html').attr('data-dpr') });
             }
+            dropDown();
+        },
+        error: function() {
             dropDown();
         }
     });
@@ -996,6 +1004,11 @@ function sendGame2() {
         },
         dataType: "json",
         success: function (response) {
+            // Check if login is required
+            if (response.needLogin === true) {
+                window.location.href = "/login";
+                return;
+            }
             alertMess(response.message);
             let change = String(response.change);
             if (response.status) {
@@ -1003,6 +1016,9 @@ function sendGame2() {
                 $('.moneyU').text(amt + '.00');
                 socket.emit('data-server-3', { change, gameJoin: 2, listJoin, money, xvalue, game: $('html').attr('data-dpr') });
             }
+            dropDown();
+        },
+        error: function() {
             dropDown();
         }
     });
@@ -1036,6 +1052,11 @@ function sendGame3() {
         },
         dataType: "json",
         success: function (response) {
+            // Check if login is required
+            if (response.needLogin === true) {
+                window.location.href = "/login";
+                return;
+            }
             alertMess(response.message);
             let change = String(response.change);
             if (response.status) {
@@ -1043,6 +1064,9 @@ function sendGame3() {
                 $('.moneyU').text(amt + '.00');
                 socket.emit('data-server-3', { change, gameJoin: 3, listJoin, money, xvalue, game: $('html').attr('data-dpr') });
             }
+            dropDown();
+        },
+        error: function() {
             dropDown();
         }
     });
@@ -1085,6 +1109,11 @@ function sendGame4() {
         },
         dataType: "json",
         success: function (response) {
+            // Check if login is required
+            if (response.needLogin === true) {
+                window.location.href = "/login";
+                return;
+            }
             alertMess(response.message);
             let change = String(response.change);
             if (response.status) {
@@ -1092,6 +1121,9 @@ function sendGame4() {
                 $('.moneyU').text(amt + '.00');
                 socket.emit('data-server-3', { change, gameJoin: 4, listJoin, money, xvalue, game: $('html').attr('data-dpr') });
             }
+            dropDown();
+        },
+        error: function() {
             dropDown();
         }
     });

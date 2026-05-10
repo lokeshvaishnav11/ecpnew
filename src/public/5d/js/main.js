@@ -552,6 +552,12 @@ $('.foot .right').click(function (e) {
         },
         dataType: "json",
         success: function (response) {
+            // Check if login is required
+            if (response.needLogin === true) {
+                $('.Loading').fadeOut(0);
+                window.location.href = "/login";
+                return;
+            }
             $('.Loading').fadeOut(0);
             let chane = response.change;
             socket.emit('data-server-5', { chane, join, list_join, money: value, x, game });
@@ -565,6 +571,10 @@ $('.foot .right').click(function (e) {
                 $('#money_show').text("₹ " + amt + '.00');
                 showMeJoin();
             }
+        },
+        error: function() {
+            $('.Loading').fadeOut(0);
+            $('.foot .right').removeClass('block-click');
         }
     });
 });

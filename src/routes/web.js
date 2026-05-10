@@ -156,19 +156,19 @@ router.post('/admin/manager/settings/increaseWallet',adminController.middlewareA
    router.get("/myProfile", middlewareController, homeController.myProfilePage)
 
    // BET wingo
-   router.get("/win", middlewareController, winGoController.winGoPage)
-   router.get("/win/3", middlewareController, winGoController.winGoPage3)
-   router.get("/win/5", middlewareController, winGoController.winGoPage5)
-   router.get("/win/10", middlewareController, winGoController.winGoPage10)
+   router.get("/win",  winGoController.winGoPage)
+   router.get("/win/3", winGoController.winGoPage3)
+   router.get("/win/5",  winGoController.winGoPage5)
+   router.get("/win/10", winGoController.winGoPage10)
 
    // BET K5D
-   router.get("/5d", middlewareController, k5Controller.K5DPage)
+   router.get("/5d",  k5Controller.K5DPage)
    router.post("/api/webapi/action/5d/join", middlewareController, k5Controller.betK5D) // register
    router.post("/api/webapi/5d/GetNoaverageEmerdList", middlewareController, k5Controller.listOrderOld) // register
    router.post("/api/webapi/5d/GetMyEmerdList", middlewareController, k5Controller.GetMyEmerdList) // register
 
    // BET K3
-   router.get("/k3", middlewareController, k3Controller.K3Page)
+   router.get("/k3", k3Controller.K3Page)
 
    router.post("/api/webapi/action/k3/join", middlewareController, k3Controller.betK3) // register
    router.post("/api/webapi/k3/GetNoaverageEmerdList", middlewareController, k3Controller.listOrderOld) // register
@@ -341,7 +341,7 @@ router.post('/admin/manager/settings/increaseWallet',adminController.middlewareA
    router.get("/activity/invitationBonusRules",middlewareController,homeController.invitationRewardRules)
 
 
-   router.use('/aviator',middlewareController,homeController.gamePage);
+   router.use('/aviator',homeController.gamePage);
 
 
 

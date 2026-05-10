@@ -1050,6 +1050,14 @@ function place_bet_now() {
         socket.emit('bet', bet_array, (msg) => {
             console.log(msg, 'bet_msg');
 
+            // Check if login is required
+            if (msg[0] && msg[0].needLogin === true) {
+                console.log('User needs to login');
+                alert('Please login to place bet');
+                window.location.href = '/login';
+                return;
+            }
+
             if ((msg[0] ? msg[0].status : true) && (msg[1] ? msg[1].status : true)) {
 
                 console.log('inside')

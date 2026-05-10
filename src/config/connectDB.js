@@ -17,6 +17,7 @@ const mysql = require('mysql2/promise');
 //     user: 'root',
 //     password: '',  // XAMPP's default root password is blank
 //     database: '1xbet',
+
 //     port: 3306
 // });
 

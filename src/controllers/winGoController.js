@@ -194,6 +194,10 @@ const betWinGo = async (req, res) => {
   let { typeid, join, x, money } = req.body;
   let auth = req.cookies.auth;
 
+  // if(!auth){
+  //   return res.redirect("/login")
+  // }
+
   if (typeid != 1 && typeid != 3 && typeid != 5 && typeid != 10) {
     return res.status(200).json({
       message: "Error!",
@@ -365,9 +369,9 @@ const betWinGo = async (req, res) => {
       .sort((a, b) => b.exp - a.exp)[0];
 
     const [parent] = await connection.execute('SELECT phone , vip_level FROM users WHERE code = ?',[user[0].invite]);
-    const ratio = vipRate.filter((data)=>data.level === parent[0].vip_level);
-    console.log(ratio,)
-    await connection.execute('UPDATE users SET win_wallet = win_wallet + ? WHERE phone = ?',[Math.round(totalBetAmount*ratio[0].rebate/100),parent[0].phone]);
+    // const ratio = vipRate.filter((data)=>data.level === parent[0].vip_level);
+    // console.log(ratio,)
+    // await connection.execute('UPDATE users SET win_wallet = win_wallet + ? WHERE phone = ?',[Math.round(totalBetAmount*ratio[0].rebate/100),parent[0].phone]);
       if(closestExpObject.level>currentLvl){
         let arr = updatedUser[0].check_vip.split(',').map(Number);
 

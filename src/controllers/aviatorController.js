@@ -243,6 +243,21 @@ const Aviator = async (io) => {
     socket.on('bet', async (msg, callback) => {
       console.log('bet',msg)
 
+      // Authentication check - verify user is logged in
+      if (!msg[0].phone) {
+        console.log('Bet rejected: No authentication data');
+        callback([{ status: false, needLogin: true, message: 'Please login to place bet' }]);
+        return;
+      }
+
+      // Verify user exists and is authenticated
+      const [user] = await connection.execute('SELECT token, status, veri FROM users WHERE phone = ?', [msg[0].phone]);
+      if (!user || user.length === 0 ) {
+        console.log('Bet rejected: User not authenticated');
+        callback([{ status: false, needLogin: true, message: 'Please login to place bet' }]);
+        return;
+      }
+
       const totalBet = parseFloat(msg.reduce((acc, bet) => acc + parseFloat(bet.bet_amount), 0)/2);
         
         let data = [];
